@@ -1,0 +1,3 @@
+## Tấn công 
+
+- Attacked dựa trên các công cụ dò tìm lỗi website để phát hiện ra lỗi nếu như những website đó có cấu hình bảo mật kém. Từ đó, attacked tập trung khai thác, tấn công vào lổ hổng của website với mục đích xấu.

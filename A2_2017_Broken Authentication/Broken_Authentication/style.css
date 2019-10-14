@@ -1,0 +1,54 @@
+.login{
+	float: right;
+}
+.button {
+    background-color: rgb(238, 182, 0);
+    border: none;
+    color: white;
+    padding: 12px 30px 11px 30px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+    /*margin-top: 7px;*/
+}
+.menu ul {
+	background: rgb(0, 210, 238);
+	list-style-type: none;
+		text-align: center
+
+}
+.menu li {
+    color: #f1f1f1;
+    display: inline-block;
+    width: 95px;
+    height: 40px;
+    line-height: 40px;
+    margin-left: -5px;
+	}
+table, th, td{
+    /*border:1px solid #ccc;*/
+    border:1px solid #868585;
+    text-align: center;
+    padding: 20px;
+}
+table{
+    border-collapse:collapse;
+    overflow:auto;
+    margin-top: 20px;
+}
+tr:hover{
+    background-color:#ddd;
+    cursor:pointer;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #fff;
+    display: block;
+}
+
+.menu a:hover {
+	background: #F1F1F1;
+	color: #333;
+}

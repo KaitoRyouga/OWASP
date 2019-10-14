@@ -1,0 +1,38 @@
+.a{
+    float: right;
+
+}
+
+.menu ul {
+    background: rgb(0, 210, 238);
+    list-style-type: none;
+    text-align: center
+ 
+}
+
+.menu a {
+    text-decoration: none;
+    color: #fff;
+    display: block;
+}
+
+.menu a:hover {
+    background: #F1F1F1;
+    color: #333;
+}
+
+.menu li {
+    color: #f1f1f1;
+    display: inline-block;
+    width: 150px;
+    height: 40px;
+    line-height: 40px;
+    margin-left: -5px;
+
+}
+
+.content{
+    text-align: center;
+    margin: 20px auto;
+    border: 1px dotted #0CC;
+}

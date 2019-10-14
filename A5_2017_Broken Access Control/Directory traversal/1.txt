@@ -1,0 +1,3 @@
+## Lỗ hổng
+
+- Lỗ hổng là điểm yếu nằm trong thiết kế và cấu hình hệ thống trên server, lỗi của dev trong quá trình code server hoặc sơ suất trong quá trình vận hành server. Dựa trên điểm yếu đó attacked tấn công vào hệ thống server để khi thác nhằm mục đích xấu.
